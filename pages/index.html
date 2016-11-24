@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+	<head>
+		<script src="./bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+		<link rel="import" href="./bower_components/polymer/polymer.html">
+		<link rel="import" href="./bower_components/paper-header-panel/paper-header-panel.html">
+		
+		<link rel="import" href="./bower_components/paper-toolbar/paper-toolbar.html">
+		<link rel="import" href="./bower_components/paper-icon-button/paper-icon-button.html">
+		<link rel="import" href="./bower_components/paper-material/paper-material.html">
+		<link rel="import" href="./bower_components/paper-drawer-panel/paper-drawer-panel.html">
+		<link rel="import" href="./bower_components/paper-button/paper-button.html">
+		
+		<link rel="import" href="./bower_components/iron-flex-layout/iron-flex-layout.html">
+		<link rel="import" href="./bower_components/iron-icons/iron-icons.html">
+		
+		<link rel="import" href="./tmpl/clan-info.html">
+		<style>
+			body {
+				font-family: Roboto, 'Noto', 'Helvetica Neue',  
+				Helvetica, Arial, sans-serif;
+			}
+			
+			.nav {
+				border-right: 1px solid #ccc;
+			}
+			
+			.main {
+				background-color: #eee;
+				
+			}
+			
+			paper-toolbar {
+				background-color: #42A5F5;
+			}
+			
+			.content {
+				padding: 0 16px;
+			}
+		</style>
+	</head>
+	<body class="fullbleed vertical layout">
+	<template is="dom-bind" id="app" >
+		<paper-drawer-panel id="drawerPanel" responsive-width="1280px" force-narrow="false">
+	    	<div class="nav" drawer="">
+				Pages <br/>
+	    		<a href="/alert">Alerts</a>
+	    	</div>
+			
+	      <paper-header-panel class="main" main="" mode="waterfall">        
+			<paper-toolbar >
+			  	<paper-icon-button icon="menu" paper-drawer-toggle=""></paper-icon-button>
+				<span class="title">
+					*{{.Title}}*
+				</span>
+				<paper-button onclick="claninfo.sort='role';"><iron-icon icon="sort"></iron-icon>roles</paper-button>
+				<paper-button onclick="sudde();"><iron-icon icon="sort"></iron-icon>rate</paper-button>
+				<paper-button onclick="claninfo.sort='rank';"><iron-icon icon="sort"></iron-icon>rank</paper-button>
+			</paper-toolbar>
+			<div class="content">
+				<clan-info id="claninfo"
+					name="*{{.Name}}*"
+					description="*{{.Description}}*"
+					
+				>
+				</clan-info>
+			</div>
+	      </paper-header-panel>
+	    </paper-drawer-panel>
+	</template>
+	</body>
+	<script>
+		var app = document.querySelector('#app');
+		app.addEventListener('dom-change', function() {
+			
+		});
+		function sudde(){
+			claninfo.sort = "rate";
+		}
+	</script>
+</html>

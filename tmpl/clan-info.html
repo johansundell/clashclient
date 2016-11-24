@@ -1,0 +1,117 @@
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<dom-module id="clan-info">
+	<style is="custom-style">
+		#cards {
+			@apply(--layout-vertical);
+			@apply(--center-justified);
+			max-width: 400px;
+			margin-left: auto;
+			margin-right: auto;
+			}
+			
+		paper-card{
+			/*height: 400px;*/
+			width: 640px;
+			
+		}			
+		paper-material.test {
+			/*height: 400px;*/
+			max-width: 640px;
+			margin: 16px auto;
+			background-color: #fff;
+		}
+
+		paper-input.short {
+			width: 200px;
+			display:inline-block;
+		}
+		.claninfo-image{
+			width:30px;
+			height:30px;
+		}
+	</style>
+	<template>
+		<iron-ajax
+			id="memberReq"
+			url=/members
+			handle-as="json"
+			on-response="handleResponse"
+			params='{{createParam(sort)}}'
+			last-response="{{ members }}"
+			on-error="updateError"
+		>
+		</iron-ajax>
+		<paper-material class="test">
+			<!--<paper-card class="claninfo" heading="*{{.Name}}*" image="*{{.Image}}*">
+				<div>{{sort}}</div>
+				<div class="card-content">
+					*{{.Description}}*
+				</div>
+			</paper-card>-->
+			<paper-card class="claninfo" heading="*{{.Name}}*" >
+				<img src="*{{.Image}}*" align="right"></img>
+				<div class="card-content">
+					*{{.Description}}*
+				</div>
+			</paper-card>
+		</paper-material>
+		<template is="dom-repeat" id="list" items="{{members}}">
+			<paper-material class="test">
+				<paper-card heading="{{item.name}}" >
+					<img src="{{item.league.iconUrls.small}}" align="right"></img>
+					<div class="card-content">
+						ClanRank: {{item.clanRank}}<br/>
+						Donations: {{item.donations}}<br/>
+						DonationsReceived: {{item.donationsReceived}}<br/>
+						ExpLevel: {{item.expLevel}}<br/>
+						PreviousClanRank: {{item.previousClanRank}}<br/>
+						Role: {{item.role}}<br/>
+						Trophies: {{item.trophies}}
+					</div>
+				</paper-card>
+			<paper-material>
+		</template>
+		
+	</template>
+</dom-module>
+<script>
+	Polymer({
+		is: "clan-info",
+		
+		properties:{
+			name: String,
+			clanImage: String,
+			description: String,
+			sort: {
+				type: String,
+				notify: true,
+				default: "rank",
+				/*observer: sortChanged,*/
+			},
+		},
+		observers: [
+      		'sortChanged(sort)'
+  		],
+		ready: function() {
+			this.members = *{{.MembersJson}}*;
+			//console.log("done");
+		},
+		sortChanged: function(){
+			//console.log(this.sort);
+			this.$.memberReq.generateRequest();
+		},
+		handleResponse : function(request) {
+			//console.log(this.members);
+			//console.log(request);
+		},
+		createParam: function(sort){
+			return {sort:sort};
+		},
+		updateError: function(event, req){
+			//console.log("event:" + event);
+			//console.log("req:" + req);
+		},
+		
+	});
+</script>

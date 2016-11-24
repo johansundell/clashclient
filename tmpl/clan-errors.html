@@ -1,0 +1,93 @@
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<dom-module id="clan-errors">
+	<style>
+		#cards {
+			@apply(--layout-vertical);
+			@apply(--center-justified);
+			max-width: 400px;
+			margin-left: auto;
+			margin-right: auto;
+			}
+			
+		paper-card{
+			/*height: 400px;*/
+			width: 640px;
+			
+		}			
+		paper-material.test {
+			/*height: 400px;*/
+			max-width: 640px;
+			margin: 16px auto;
+			background-color: #fff;
+		}
+
+		paper-input.short {
+			width: 200px;
+			display:inline-block;
+		}
+	</style>
+	<template>
+		<paper-material class="test">
+			<paper-card heading="Duplicate members" >
+				<div class="card-content">
+					Members that have multiple usernames
+				</div>
+			</paper-card>
+		</paper-material>
+		<template is="dom-repeat" id="list" items="{{members}}">
+			<paper-material class="test">
+				<paper-card heading="{{item.name}}" >
+					<img src="{{item.league.iconUrls.small}}" align="right"></img>
+					<div>
+						ClanRank: {{item.clanRank}}<br/>
+						Donations: {{item.donations}}<br/>
+						DonationsReceived: {{item.donationsReceived}}<br/>
+						ExpLevel: {{item.expLevel}}<br/>
+						PreviousClanRank: {{item.previousClanRank}}<br/>
+						Role: {{item.role}}<br/>
+						Trophies: {{item.trophies}}
+					</div>
+				</paper-card>
+			<paper-material>
+		</template>
+		
+		<paper-material class="test">
+			<paper-card heading="Old members" >
+				<div class="card-content">
+					Members that have rejoined
+				</div>
+			</paper-card>
+		</paper-material>
+		<template is="dom-repeat" id="list" items="{{oldmembers}}">
+			<paper-material class="test">
+				<paper-card heading="{{item.name}}" >
+					<img src="{{item.league.iconUrls.small}}" align="right"></img>
+					<div>
+						ClanRank: {{item.clanRank}}<br/>
+						Donations: {{item.donations}}<br/>
+						DonationsReceived: {{item.donationsReceived}}<br/>
+						ExpLevel: {{item.expLevel}}<br/>
+						PreviousClanRank: {{item.previousClanRank}}<br/>
+						Role: {{item.role}}<br/>
+						Trophies: {{item.trophies}}
+					</div>
+				</paper-card>
+			<paper-material>
+		</template>
+		
+	</template>
+</dom-module>
+<script>
+	Polymer({
+		is: "clan-errors",
+		properties:{
+			name: String,
+			clanImage: String,
+			description: String,
+		},
+		ready: function() {
+			this.members = *{{.MembersJson}}*;
+			this.oldmembers = *{{.OldMembersJson}}*;
+		}
+	});
+</script>
