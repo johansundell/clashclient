@@ -58,16 +58,22 @@
 		</paper-material>
 		<template is="dom-repeat" id="list" items="{{members}}">
 			<paper-material class="test">
-				<paper-card heading="{{item.name}}" >
+				<paper-card heading="{{fixIndex(index)}} - {{item.name}}" >
 					<img src="{{item.league.iconUrls.small}}" align="right"></img>
 					<div class="card-content">
-						ClanRank: {{item.clanRank}}<br/>
-						Donations: {{item.donations}}<br/>
-						DonationsReceived: {{item.donationsReceived}}<br/>
-						ExpLevel: {{item.expLevel}}<br/>
+						Clan Rank: {{item.clanRank}}<br/>
+						
+						
+						Exp Level: {{item.expLevel}}<br/>
+						<!--
 						PreviousClanRank: {{item.previousClanRank}}<br/>
+						-->
 						Role: {{item.role}}<br/>
-						Trophies: {{item.trophies}}
+						Trophies: {{item.trophies}}<br/>
+						War Stars: {{item.warStars}}<br/>
+						Attack Wins(Season): {{item.attackWins}}<br/>
+						Donations(Season): {{item.donations}}<br/>
+						Donations Received(Season): {{item.donationsReceived}}<br/>
 					</div>
 				</paper-card>
 			<paper-material>
@@ -111,6 +117,9 @@
 		updateError: function(event, req){
 			//console.log("event:" + event);
 			//console.log("req:" + req);
+		},
+		fixIndex: function(i){
+			return i+1;
 		},
 		
 	});

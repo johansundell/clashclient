@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -13,7 +14,6 @@ import (
 	"time"
 
 	"github.com/boltdb/bolt"
-	"github.com/johansundell/cocapi"
 	"github.com/kardianos/osext"
 )
 
@@ -25,7 +25,7 @@ type settings struct {
 
 var mySettings settings
 
-var cocClient cocapi.Client
+//var cocClient cocapi.Client
 
 type Route struct {
 	Name        string
@@ -44,20 +44,17 @@ func init() {
 	mySettings.port = os.Getenv("COC_PORT")
 	mySettings.clan = os.Getenv("COC_CLANTAG")
 	mySettings.apikey = os.Getenv("COC_KEY")
+	if mySettings.port == "" {
+		mySettings.port = "8080"
+	}
 }
 
 var db *bolt.DB
 
-type Player struct {
-	cocapi.Player
-	Active      bool      `json:"active"`
-	Created     time.Time `json:"created"`
-	LastUpdated time.Time `json:"lastUpdated"`
-	Left        time.Time `json:"left"`
-}
-
 func main() {
 	flag.StringVar(&mySettings.port, "port", mySettings.port, "Port to run service on")
+	flag.StringVar(&mySettings.clan, "clan", mySettings.clan, "Clan tag to view")
+	flag.StringVar(&mySettings.apikey, "apikey", mySettings.apikey, "API key to use")
 	flag.Parse()
 	fmt.Println("Starting", mySettings)
 	myPath, _ := osext.ExecutableFolder()
@@ -67,24 +64,40 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
-	initDb()
-	cocClient = cocapi.NewClient(mySettings.apikey)
-
+	if mySettings.apikey == "" && mySettings.clan == "" {
+		resp := getPublicIP()
+		type ip struct {
+			Ip string `json:"ip"`
+		}
+		i := ip{}
+		err := json.Unmarshal(resp, &i)
+		if err != nil {
+			log.Println(err)
+		}
+		log.Println("API key not set or clan tag not set, please see clashclient -h")
+		log.Println("Your public ip adress is", i.Ip)
+		log.Println("Create an account on https://developer.clashofclans.com to get an API key")
+		return
+	}
+	initDb(mySettings.clan)
 	updateClan()
 
-	return
+	//return
 
 	router := NewRouter()
 	go func() {
-
-		//http.Handle("/tmpl/", http.FileServer(&assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, AssetInfo: AssetInfo, Prefix: ""}))
-		//log.Fatal(http.ListenAndServe(":8080", nil))
 		log.Fatal(http.ListenAndServe(":"+mySettings.port, router))
 	}()
+	log.Println("Webserver started")
 
 	quit := make(chan struct{})
+	ticker := time.NewTicker(1 * time.Minute)
 	go func() {
 		for {
+			select {
+			case <-ticker.C:
+				updateClan()
+			}
 			select {
 			case <-quit:
 				return
@@ -95,8 +108,10 @@ func main() {
 	// Wait for SIGINT and SIGTERM (HIT CTRL-C)
 	ch := make(chan os.Signal)
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
-	log.Println(<-ch)
-	return
+	/*
+		log.Println(<-ch)
+		return
+	*/
 
 	var startErr error
 	switch runtime.GOOS {
@@ -115,51 +130,4 @@ func main() {
 
 	close(quit)
 	log.Println("Bye ;)")
-}
-
-func updateClan() error {
-	cocClient = cocapi.NewClient(mySettings.apikey)
-	clan, err := cocClient.GetClanInfo(mySettings.clan)
-	if err != nil {
-		return err
-	}
-	currentMembers := make(map[string]Player)
-	for _, row := range clan.MemberList {
-		p, err := cocClient.GetPlayerInfo(row.Tag)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-		member, err := getMember(row.Tag)
-		switch t := err.(type) {
-		case *dbError:
-			if t.errorType == NotFound {
-				member = Player{p, true, time.Now(), time.Now(), time.Time{}}
-			}
-			break
-		default:
-			member = Player{p, true, member.Created, time.Now(), time.Time{}}
-			break
-		}
-
-		//fmt.Println(member)
-		if err := saveMember(member); err != nil {
-			log.Println(err)
-		}
-		currentMembers[member.Tag] = member
-		//time.Sleep(250 * time.Millisecond)
-	}
-	log.Println("Saved current members to db")
-	oldMembers := getMembersFromDb()
-	for _, row := range oldMembers {
-		if m, ok := currentMembers[row.Tag]; !ok {
-			m.Active = false
-			m.Left = time.Now()
-			if err := saveMember(m); err != nil {
-				log.Println(err)
-			}
-		}
-	}
-
-	return nil
 }

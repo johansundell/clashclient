@@ -43,8 +43,11 @@
 	<template is="dom-bind" id="app" >
 		<paper-drawer-panel id="drawerPanel" responsive-width="1280px" force-narrow="false">
 	    	<div class="nav" drawer="">
+				<!--
 				Pages <br/>
 	    		<a href="/alert">Alerts</a>
+				-->
+				TODO
 	    	</div>
 			
 	      <paper-header-panel class="main" main="" mode="waterfall">        
@@ -53,6 +56,8 @@
 				<span class="title">
 					*{{.Title}}*
 				</span>
+				<paper-button onclick="claninfo.sort='attackwins';"><iron-icon icon="sort"></iron-icon>Attack wins</paper-button>
+				<paper-button onclick="claninfo.sort='warstars';"><iron-icon icon="sort"></iron-icon>War stars</paper-button>
 				<paper-button onclick="claninfo.sort='role';"><iron-icon icon="sort"></iron-icon>roles</paper-button>
 				<paper-button onclick="sudde();"><iron-icon icon="sort"></iron-icon>rate</paper-button>
 				<paper-button onclick="claninfo.sort='rank';"><iron-icon icon="sort"></iron-icon>rank</paper-button>
