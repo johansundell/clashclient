@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"os/signal"
 	"runtime"
+	"strings"
 	"syscall"
 	"time"
 
@@ -52,12 +53,15 @@ func init() {
 var db *bolt.DB
 
 func main() {
-	flag.StringVar(&mySettings.port, "port", mySettings.port, "Port to run service on")
-	flag.StringVar(&mySettings.clan, "clan", mySettings.clan, "Clan tag to view")
-	flag.StringVar(&mySettings.apikey, "apikey", mySettings.apikey, "API key to use")
+	flag.StringVar(&mySettings.port, "port", mySettings.port, "Port to run service on, can also be set in env var COC_PORT")
+	flag.StringVar(&mySettings.clan, "clan", mySettings.clan, "Clan tag to view, can also be set in env var COC_CLANTAG")
+	flag.StringVar(&mySettings.apikey, "apikey", mySettings.apikey, "API key to use, can also be set in env var COC_KEY")
 	flag.Parse()
 	fmt.Println("Starting", mySettings)
 	myPath, _ := osext.ExecutableFolder()
+	if !strings.HasSuffix(myPath, string(os.PathSeparator)) {
+		myPath = myPath + string(os.PathSeparator)
+	}
 	var err error
 	db, err = bolt.Open(myPath+"my.db", 0600, &bolt.Options{Timeout: 1 * time.Second})
 	if err != nil {
@@ -118,7 +122,7 @@ func main() {
 
 	url := "http://localhost:" + mySettings.port
 	fmt.Println(url)
-	//openbrowser(url)
+	openbrowser(url)
 
 	log.Println(<-ch)
 
