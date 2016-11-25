@@ -46,7 +46,7 @@ func init() {
 	mySettings.clan = os.Getenv("COC_CLANTAG")
 	mySettings.apikey = os.Getenv("COC_KEY")
 	if mySettings.port == "" {
-		mySettings.port = "8080"
+		mySettings.port = "8888"
 	}
 }
 
