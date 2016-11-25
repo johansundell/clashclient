@@ -113,7 +113,7 @@ func main() {
 		return
 	*/
 
-	var startErr error
+	/*var startErr error
 	switch runtime.GOOS {
 	case "linux":
 		startErr = exec.Command("xdg-open", "http://localhost:"+mySettings.port).Start()
@@ -124,10 +124,32 @@ func main() {
 	}
 	if startErr != nil {
 		log.Println(startErr)
-	}
+	}*/
+	url := "http://localhost:" + mySettings.port
+	fmt.Println(url)
+	openbrowser(url)
 
 	log.Println(<-ch)
 
 	close(quit)
 	log.Println("Bye ;)")
+}
+
+func openbrowser(url string) {
+	var err error
+
+	switch runtime.GOOS {
+	case "linux":
+		err = exec.Command("xdg-open", url).Start()
+	case "windows":
+		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
+	case "darwin":
+		err = exec.Command("open", url).Start()
+	default:
+		err = fmt.Errorf("unsupported platform")
+	}
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }
