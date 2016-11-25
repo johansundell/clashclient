@@ -64,7 +64,7 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
-	if mySettings.apikey == "" && mySettings.clan == "" {
+	if mySettings.apikey == "" || mySettings.clan == "" {
 		resp := getPublicIP()
 		type ip struct {
 			Ip string `json:"ip"`
@@ -90,16 +90,19 @@ func main() {
 	}()
 	log.Println("Webserver started")
 
-	quit := make(chan struct{})
+	//ticker := time.NewTicker(1 * time.Minute)
+	//ticker := time.NewTicker(10 * time.Second)
+
 	ticker := time.NewTicker(1 * time.Minute)
+	quit := make(chan struct{})
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
 				updateClan()
-			}
-			select {
+				//log.Println("tick")
 			case <-quit:
+				ticker.Stop()
 				return
 			}
 		}
@@ -113,21 +116,9 @@ func main() {
 		return
 	*/
 
-	/*var startErr error
-	switch runtime.GOOS {
-	case "linux":
-		startErr = exec.Command("xdg-open", "http://localhost:"+mySettings.port).Start()
-	case "windows", "darwin":
-		startErr = exec.Command("open", "http://localhost:"+mySettings.port).Start()
-	default:
-		startErr = fmt.Errorf("unsupported platform")
-	}
-	if startErr != nil {
-		log.Println(startErr)
-	}*/
 	url := "http://localhost:" + mySettings.port
 	fmt.Println(url)
-	openbrowser(url)
+	//openbrowser(url)
 
 	log.Println(<-ch)
 
