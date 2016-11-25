@@ -15,10 +15,7 @@ install:
 compile:
 	@rm -rf build/
 	@gox $(LDFLAGS) \
-	-os="darwin" \
 	-os="linux" \
-	-os="windows" \
-	-os="arm" \
 	-output "build/$(NAME)_$(VERSION)_{{.OS}}_{{.Arch}}/$(NAME)" \
 	./...
 
