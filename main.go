@@ -56,6 +56,8 @@ func main() {
 	flag.StringVar(&mySettings.port, "port", mySettings.port, "Port to run service on, can also be set in env var COC_PORT")
 	flag.StringVar(&mySettings.clan, "clan", mySettings.clan, "Clan tag to view, can also be set in env var COC_CLANTAG")
 	flag.StringVar(&mySettings.apikey, "apikey", mySettings.apikey, "API key to use, can also be set in env var COC_KEY")
+	var showPublicIp bool
+	flag.BoolVar(&showPublicIp, "showip", false, "Show public ip")
 	flag.Parse()
 	fmt.Println("Starting", mySettings)
 	myPath, _ := osext.ExecutableFolder()
@@ -68,7 +70,7 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
-	if mySettings.apikey == "" || mySettings.clan == "" {
+	if mySettings.apikey == "" || mySettings.clan == "" || showPublicIp {
 		resp := getPublicIP()
 		type ip struct {
 			Ip string `json:"ip"`
