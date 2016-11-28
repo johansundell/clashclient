@@ -1,6 +1,6 @@
 GHACCOUNT := johansundell
 NAME := clashclient
-VERSION := v1.1
+VERSION := v1.2
 
 include common.mk
 
