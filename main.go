@@ -59,6 +59,19 @@ func main() {
 	var showPublicIp bool
 	flag.BoolVar(&showPublicIp, "showip", false, "Show public ip")
 	flag.Parse()
+	if showPublicIp {
+		resp := getPublicIP()
+		type ip struct {
+			Ip string `json:"ip"`
+		}
+		i := ip{}
+		err := json.Unmarshal(resp, &i)
+		if err != nil {
+			log.Println(err)
+		}
+		log.Println("Your public ip adress is", i.Ip)
+		return
+	}
 	fmt.Println("Starting", mySettings)
 	myPath, _ := osext.ExecutableFolder()
 	if !strings.HasSuffix(myPath, string(os.PathSeparator)) {
@@ -70,18 +83,8 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
-	if mySettings.apikey == "" || mySettings.clan == "" || showPublicIp {
-		resp := getPublicIP()
-		type ip struct {
-			Ip string `json:"ip"`
-		}
-		i := ip{}
-		err := json.Unmarshal(resp, &i)
-		if err != nil {
-			log.Println(err)
-		}
+	if mySettings.apikey == "" || mySettings.clan == "" {
 		log.Println("API key not set or clan tag not set, please see clashclient -h")
-		log.Println("Your public ip adress is", i.Ip)
 		log.Println("Create an account on https://developer.clashofclans.com to get an API key")
 		return
 	}
